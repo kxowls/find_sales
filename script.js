@@ -22,23 +22,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // 데이터 로드
     async function loadData() {
         try {
+            console.log('API에서 데이터 로드 시도 중...');
             // 먼저 API 엔드포인트에서 시도
             const response = await fetch('/api/contacts');
             if (!response.ok) {
-                throw new Error('API 연결 실패');
+                throw new Error(`API 연결 실패: ${response.status} ${response.statusText}`);
             }
-            allData = await response.json();
-            console.log('API에서 데이터 로드 완료');
+            const data = await response.json();
+            if (Array.isArray(data) && data.length > 0) {
+                allData = data;
+                console.log(`API에서 데이터 로드 완료: ${allData.length}개의 항목`);
+                return;
+            } else {
+                throw new Error('API에서 유효한 데이터를 반환하지 않았습니다');
+            }
         } catch (apiError) {
             console.error('API 오류:', apiError);
             try {
+                console.log('정적 파일에서 데이터 로드 시도 중...');
                 // API 실패 시 정적 파일에서 시도
-                const fallbackResponse = await fetch('data.json');
+                const fallbackResponse = await fetch('/data.json');
                 if (!fallbackResponse.ok) {
-                    throw new Error('정적 파일 로드 실패');
+                    throw new Error(`정적 파일 로드 실패: ${fallbackResponse.status} ${fallbackResponse.statusText}`);
                 }
-                allData = await fallbackResponse.json();
-                console.log('정적 파일에서 데이터 로드 완료', allData.length);
+                const data = await fallbackResponse.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    allData = data;
+                    console.log(`정적 파일에서 데이터 로드 완료: ${allData.length}개의 항목`);
+                } else {
+                    throw new Error('정적 파일에서 유효한 데이터를 반환하지 않았습니다');
+                }
             } catch (fallbackError) {
                 console.error('데이터 로드 실패:', fallbackError);
                 alert('데이터를 불러오는데 실패했습니다. 페이지를 새로고침 해주세요.');
@@ -61,6 +74,12 @@ document.addEventListener('DOMContentLoaded', () => {
         currentSearchTerm = searchInput.value.toLowerCase().trim();
         const excludeNonUnivChecked = excludeNonUniv.checked;
         const excludeOldChecked = excludeOld.checked;
+
+        if (!Array.isArray(allData) || allData.length === 0) {
+            companyList.innerHTML = '<div class="no-results">데이터가 로드되지 않았습니다. 페이지를 새로고침 해주세요.</div>';
+            showResultsSection();
+            return;
+        }
 
         filteredData = allData.filter(item => {
             const matchesSearch = Object.values(item).some(value => 
@@ -185,5 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 초기 데이터 로드
-    loadData();
+    loadData().then(() => {
+        console.log('애플리케이션 초기화 완료');
+    }).catch(error => {
+        console.error('애플리케이션 초기화 중 오류 발생:', error);
+    });
 }); 
