@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const backToResults = document.getElementById('back-to-results');
 
     let filteredData = [];
+    let currentState = 'search'; // 현재 상태 추적: 'search', 'results', 'detail'
 
     // 데이터 로드
     async function loadData() {
@@ -111,6 +112,28 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 
+    // 브라우저 뒤로가기/앞으로가기 처리
+    window.addEventListener('popstate', (event) => {
+        const state = event.state?.page || 'search';
+        console.log('popstate 이벤트:', state);
+        
+        switch(state) {
+            case 'search':
+                showSearchSection(false);
+                break;
+            case 'results':
+                showResultsSection(false);
+                break;
+            case 'detail':
+                if (event.state?.item) {
+                    showDetails(event.state.item, false);
+                } else {
+                    showSearchSection(false);
+                }
+                break;
+        }
+    });
+
     // 검색 실행
     function performSearch() {
         currentSearchTerm = searchInput.value.toLowerCase().trim();
@@ -179,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 상세 정보 표시
-    function showDetails(item) {
+    function showDetails(item, addToHistory = true) {
         // 모든 필드에 하이라이트 적용
         const nameHighlighted = highlightText(item.name || '정보 없음', currentSearchTerm);
         const phoneHighlighted = highlightText(item.phone || '정보 없음', currentSearchTerm);
@@ -210,27 +233,45 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         
-        showDetailSection();
+        showDetailSection(addToHistory);
+        if (addToHistory) {
+            history.pushState({ page: 'detail', item: item }, '', `/detail/${encodeURIComponent(item.name)}`);
+        }
     }
 
     // 섹션 표시/숨김 함수들
-    function showSearchSection() {
+    function showSearchSection(addToHistory = true) {
         searchSection.style.display = 'block';
         resultsSection.style.display = 'none';
         detailSection.style.display = 'none';
         searchInput.focus();
+        currentState = 'search';
+        
+        if (addToHistory) {
+            history.pushState({ page: 'search' }, '', '/');
+        }
     }
 
-    function showResultsSection() {
+    function showResultsSection(addToHistory = true) {
         searchSection.style.display = 'none';
         resultsSection.style.display = 'block';
         detailSection.style.display = 'none';
+        currentState = 'results';
+        
+        if (addToHistory) {
+            history.pushState({ page: 'results' }, '', '/results');
+        }
     }
 
-    function showDetailSection() {
+    function showDetailSection(addToHistory = true) {
         searchSection.style.display = 'none';
         resultsSection.style.display = 'none';
         detailSection.style.display = 'block';
+        currentState = 'detail';
+        
+        if (addToHistory) {
+            history.pushState({ page: 'detail' }, '', '/detail');
+        }
     }
 
     // 이벤트 리스너
@@ -238,8 +279,8 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') performSearch();
     });
-    backToSearch.addEventListener('click', showSearchSection);
-    backToResults.addEventListener('click', showResultsSection);
+    backToSearch.addEventListener('click', () => showSearchSection());
+    backToResults.addEventListener('click', () => showResultsSection());
 
     // 필터 변경 시 자동 검색
     excludeNonUniv.addEventListener('change', () => {
