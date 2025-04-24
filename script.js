@@ -188,11 +188,17 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 검색어 하이라이트 적용
             const nameHighlighted = highlightText(item.name || '거래처명 없음', currentSearchTerm);
+            const sales1Highlighted = highlightText(item.sales1 || '담당자 미지정', currentSearchTerm);
             const sales2Highlighted = highlightText(item.sales2 || '담당자 미지정', currentSearchTerm);
+            const managerHighlighted = highlightText(item.manager || '담당자 미지정', currentSearchTerm);
             
             companyItem.innerHTML = `
                 <h3>${nameHighlighted}</h3>
-                <p>${sales2Highlighted}</p>
+                <div class="company-info">
+                    <p>영업2팀:<br>${sales2Highlighted}</p>
+                    <p>영업1팀:<br>${sales1Highlighted}</p>
+                    <p>거래처 담당:<br>${managerHighlighted}</p>
+                </div>
             `;
             companyItem.addEventListener('click', () => showDetails(item));
             gridContainer.appendChild(companyItem);
