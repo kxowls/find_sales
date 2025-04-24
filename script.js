@@ -179,32 +179,43 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const gridContainer = document.createElement('div');
-        gridContainer.className = 'company-grid';
+        const tableContainer = document.createElement('div');
+        tableContainer.className = 'company-table-container';
         
         filteredData.forEach(item => {
             const companyItem = document.createElement('div');
-            companyItem.className = 'company-item';
+            companyItem.className = 'company-table-item';
             
             // 검색어 하이라이트 적용
             const nameHighlighted = highlightText(item.name || '거래처명 없음', currentSearchTerm);
-            const sales1Highlighted = highlightText(item.sales1 || '담당자 미지정', currentSearchTerm);
-            const sales2Highlighted = highlightText(item.sales2 || '담당자 미지정', currentSearchTerm);
-            const managerHighlighted = highlightText(item.manager || '담당자 미지정', currentSearchTerm);
+            
+            // 담당자 정보 간소화 처리
+            let sales1Display = item.sales1 || '-';
+            let sales2Display = item.sales2 || '-';
+            let managerDisplay = item.manager || '-';
             
             companyItem.innerHTML = `
-                <h3>${nameHighlighted}</h3>
-                <div class="company-info">
-                    <p>영업2팀:<br>${sales2Highlighted}</p>
-                    <p>영업1팀:<br>${sales1Highlighted}</p>
-                    <p>거래처 담당:<br>${managerHighlighted}</p>
+                <div class="company-table-header">${nameHighlighted}</div>
+                <div class="company-table-content">
+                    <div class="table-column">
+                        <div class="column-header">영업1팀</div>
+                        <div class="column-content">${sales1Display}</div>
+                    </div>
+                    <div class="table-column">
+                        <div class="column-header">영업2팀</div>
+                        <div class="column-content">${sales2Display}</div>
+                    </div>
+                    <div class="table-column">
+                        <div class="column-header">거래처 담당</div>
+                        <div class="column-content">${managerDisplay}</div>
+                    </div>
                 </div>
             `;
             companyItem.addEventListener('click', () => showDetails(item));
-            gridContainer.appendChild(companyItem);
+            tableContainer.appendChild(companyItem);
         });
 
-        companyList.appendChild(gridContainer);
+        companyList.appendChild(tableContainer);
     }
 
     // 상세 정보 표시
