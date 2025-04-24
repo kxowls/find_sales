@@ -179,43 +179,41 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const tableContainer = document.createElement('div');
-        tableContainer.className = 'company-table-container';
+        const gridContainer = document.createElement('div');
+        gridContainer.className = 'company-grid';
         
         filteredData.forEach(item => {
             const companyItem = document.createElement('div');
-            companyItem.className = 'company-table-item';
+            companyItem.className = 'company-item';
             
             // 검색어 하이라이트 적용
             const nameHighlighted = highlightText(item.name || '거래처명 없음', currentSearchTerm);
             
-            // 담당자 정보 간소화 처리
+            // 담당자 정보 표시
             let sales1Display = item.sales1 || '-';
             let sales2Display = item.sales2 || '-';
             let managerDisplay = item.manager || '-';
             
             companyItem.innerHTML = `
-                <div class="company-table-header">${nameHighlighted}</div>
-                <div class="company-table-content">
-                    <div class="table-column">
-                        <div class="column-header">영업1팀</div>
-                        <div class="column-content">${sales1Display}</div>
-                    </div>
-                    <div class="table-column">
-                        <div class="column-header">영업2팀</div>
-                        <div class="column-content">${sales2Display}</div>
-                    </div>
-                    <div class="table-column">
-                        <div class="column-header">거래처 담당</div>
-                        <div class="column-content">${managerDisplay}</div>
-                    </div>
-                </div>
+                <h3>${nameHighlighted}</h3>
+                <table class="company-table">
+                    <tr>
+                        <th>영업1팀</th>
+                        <th>영업2팀</th>
+                        <th>거래처 담당</th>
+                    </tr>
+                    <tr>
+                        <td>${sales1Display}</td>
+                        <td>${sales2Display}</td>
+                        <td>${managerDisplay}</td>
+                    </tr>
+                </table>
             `;
             companyItem.addEventListener('click', () => showDetails(item));
-            tableContainer.appendChild(companyItem);
+            gridContainer.appendChild(companyItem);
         });
 
-        companyList.appendChild(tableContainer);
+        companyList.appendChild(gridContainer);
     }
 
     // 상세 정보 표시
