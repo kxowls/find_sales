@@ -189,10 +189,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // 검색어 하이라이트 적용
             const nameHighlighted = highlightText(item.name || '거래처명 없음', currentSearchTerm);
             
-            // 담당자 정보 표시
-            let sales1Display = item.sales1 || '-';
-            let sales2Display = item.sales2 || '-';
-            let managerDisplay = item.manager || '-';
+            // 담당자 정보 표시 - 코드(_이전) 제거하고 이름만 표시
+            let sales1Display = extractName(item.sales1);
+            let sales2Display = extractName(item.sales2);
+            let managerDisplay = extractName(item.manager);
             
             companyItem.innerHTML = `
                 <h3>${nameHighlighted}</h3>
@@ -216,15 +216,31 @@ document.addEventListener('DOMContentLoaded', () => {
         companyList.appendChild(gridContainer);
     }
 
+    // 담당자 코드에서 이름만 추출하는 함수
+    function extractName(text) {
+        if (!text) return '-';
+        
+        // xx_이름 형식에서 이름만 추출
+        const match = text.match(/_([^_]+)$/);
+        if (match && match[1]) {
+            return match[1];
+        }
+        
+        return text;
+    }
+
     // 상세 정보 표시
     function showDetails(item, addToHistory = true) {
         // 모든 필드에 하이라이트 적용
         const nameHighlighted = highlightText(item.name || '정보 없음', currentSearchTerm);
         const phoneHighlighted = highlightText(item.phone || '정보 없음', currentSearchTerm);
         const addressHighlighted = highlightText(item.address || '정보 없음', currentSearchTerm);
-        const managerHighlighted = highlightText(item.manager || '정보 없음', currentSearchTerm);
-        const sales1Highlighted = highlightText(item.sales1 || '정보 없음', currentSearchTerm);
-        const sales2Highlighted = highlightText(item.sales2 || '정보 없음', currentSearchTerm);
+        
+        // 담당자 정보는 이름만 표시
+        const managerHighlighted = highlightText(extractName(item.manager), currentSearchTerm);
+        const sales1Highlighted = highlightText(extractName(item.sales1), currentSearchTerm);
+        const sales2Highlighted = highlightText(extractName(item.sales2), currentSearchTerm);
+        
         const regionHighlighted = highlightText(item.region || '정보 없음', currentSearchTerm);
         const universityHighlighted = highlightText(item.university || '대학 아님', currentSearchTerm);
         

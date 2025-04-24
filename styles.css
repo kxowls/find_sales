@@ -306,6 +306,7 @@ header h1 {
     text-align: center;
     border: none;
     font-weight: normal;
+    white-space: nowrap;
 }
 
 .company-table td {
@@ -321,13 +322,16 @@ header h1 {
     border-right: 1px solid #e1e5e8;
 }
 
-@media (max-width: 768px) {
-    .company-table {
+@media (max-width: 576px) {
+    .company-item h3 {
+        font-size: 1rem;
+    }
+    
+    .company-table th {
         font-size: 0.8rem;
     }
     
-    .company-table th,
     .company-table td {
-        padding: 0.4rem 0.2rem;
+        font-size: 0.8rem;
     }
 } 
