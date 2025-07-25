@@ -1,69 +1,192 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>담당 영업자 검색</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>담당 영업자 검색</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .search-section {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .search-box button {
+      padding: 10px 14px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .search-box button i {
+      font-size: 1rem;
+    }
+
+    .filter-options {
+      margin-top: 10px;
+    }
+
+    .filter-checkbox {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .note {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .note i {
+      color: #999;
+    }
+
+    .note .region {
+      font-weight: 500;
+      color: #444;
+    }
+
+    .results-section,
+    .detail-section {
+      margin-top: 20px;
+      display: none;
+    }
+
+    .results-header,
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .results-header h2 {
+      margin: 0;
+    }
+
+    .results-header button,
+    .detail-header button {
+      background: none;
+      border: none;
+      color: #007BFF;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .company-list,
+    .company-details {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>담당 영업자 검색</h1>
-        </header>
-        
-        <div class="search-section">
-
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="검색어를 입력하세요">
-                <button id="search-button">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-            
-            <div class="filter-options">
-                <label class="filter-checkbox">
-                    <input type="checkbox" id="exclude-non-univ">
-                    <span>대학 외 거래처 제외</span>
-                </label>
-                <label class="filter-checkbox">
-                    <input type="checkbox" id="exclude-old">
-                    <span>구 거래처 제외</span>
-                </label>
-                학원, 기업체, 직업학교 문의: 서울 - 임현기, 수도권 - 이정훈
-            </div>
-        </div>
-
-        <div class="results-section" style="display: none;">
-            <div class="results-header">
-                <h2>검색 결과</h2>
-                <button id="back-to-search">
-                    <i class="fas fa-arrow-left"></i> 검색으로 돌아가기
-                </button>
-            </div>
-            
-            <div class="company-list">
-                <!-- 검색 결과가 여기에 표시됩니다 -->
-            </div>
-        </div>
-
-        <div class="detail-section" style="display: none;">
-            <div class="detail-header">
-                <button id="back-to-results">
-                    <i class="fas fa-arrow-left"></i> 결과 목록으로
-                </button>
-            </div>
-            <div class="company-details">
-                <!-- 상세 정보가 여기에 표시됩니다 -->
-            </div>
-        </div>
-    </div>
+  <div class="container">
+    <header>
+      <h1>담당 영업자 검색</h1>
+    </header>
     
-    <script src="script.js"></script>
+    <div class="search-section">
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="검색어를 입력하세요">
+        <button id="search-button">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+      
+      <div class="filter-options">
+        <label class="filter-checkbox">
+          <input type="checkbox" id="exclude-non-univ">
+          <span>대학 외 거래처 제외</span>
+        </label>
+        <label class="filter-checkbox">
+          <input type="checkbox" id="exclude-old">
+          <span>구 거래처 제외</span>
+        </label>
+
+        <div class="note">
+          <i class="fas fa-info-circle"></i>
+          학원, 기업체, 직업학교 문의: 
+          <span class="region">서울</span> - 임현기, 
+          <span class="region">수도권</span> - 이정훈
+        </div>
+      </div>
+    </div>
+
+    <div class="results-section">
+      <div class="results-header">
+        <h2>검색 결과</h2>
+        <button id="back-to-search">
+          <i class="fas fa-arrow-left"></i> 검색으로 돌아가기
+        </button>
+      </div>
+      <div class="company-list">
+        <!-- 검색 결과 표시 -->
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-header">
+        <button id="back-to-results">
+          <i class="fas fa-arrow-left"></i> 결과 목록으로
+        </button>
+      </div>
+      <div class="company-details">
+        <!-- 상세 정보 표시 -->
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
-</html> 
-
-
-
+</html>
