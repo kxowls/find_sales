@@ -205,8 +205,8 @@ document.addEventListener('DOMContentLoaded', () => {
             let managerContact = managerContacts[managerName] || '';
             let managerDisplay = managerContact ? `${managerName} (${managerContact})` : managerName;
 
-            // 주소 정보 표시
-            const addressDisplay = item.address || '주소 정보 없음';
+            // 주소 정보 축약 표시
+            const addressDisplay = truncateAddress(item.address) || '주소 정보 없음';
 
             companyItem.innerHTML = `
                 <h3>${nameHighlighted}</h3>
@@ -224,6 +224,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         companyList.appendChild(gridContainer);
+    }
+
+    // 담당자 코드에서 이름만 추출하는 함수
+    function extractName(text) {
+        if (!text) return '-';
+
+        // xx_이름 형식에서 이름만 추출
+        const match = text.match(/_([^_]+)$/);
+        if (match && match[1]) {
+            return match[1];
+        }
+
+        return text;
     }
 
     // 주소 축약 함수
