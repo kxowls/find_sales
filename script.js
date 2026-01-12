@@ -6,7 +6,7 @@ let isDataLoaded = false;
 // DOM이 로드된 후 실행
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM이 로드되었습니다.');
-    
+
     // DOM 요소
     const searchInput = document.getElementById('search-input');
     const searchButton = document.getElementById('search-button');
@@ -49,14 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('API에서 데이터 로드 시도 중...');
             const response = await fetch('/api/contacts');
             console.log('API 응답:', response);
-            
+
             if (!response.ok) {
                 throw new Error(`API 연결 실패: ${response.status} ${response.statusText}`);
             }
-            
+
             const data = await response.json();
             console.log('API 데이터 수신:', data && Array.isArray(data) ? `${data.length}개 항목` : '유효하지 않은 데이터');
-            
+
             if (Array.isArray(data) && data.length > 0) {
                 allData = data;
                 isDataLoaded = true;
@@ -77,14 +77,14 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('정적 파일에서 데이터 로드 시도 중...');
             const response = await fetch('/data.json');
             console.log('정적 파일 응답:', response);
-            
+
             if (!response.ok) {
                 throw new Error(`정적 파일 로드 실패: ${response.status} ${response.statusText}`);
             }
-            
+
             const data = await response.json();
             console.log('정적 파일 데이터 수신:', data && Array.isArray(data) ? `${data.length}개 항목` : '유효하지 않은 데이터');
-            
+
             if (Array.isArray(data) && data.length > 0 && !isDataLoaded) {
                 allData = data;
                 isDataLoaded = true;
@@ -105,9 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // 텍스트에서 검색어 하이라이트 추가 함수
     function highlightText(text, searchTerm) {
         if (!searchTerm || !text) return text;
-        
+
         const regex = new RegExp(searchTerm.trim(), 'gi');
-        return text.toString().replace(regex, match => 
+        return text.toString().replace(regex, match =>
             `<span class="highlight">${match}</span>`
         );
     }
@@ -116,8 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('popstate', (event) => {
         const state = event.state?.page || 'search';
         console.log('popstate 이벤트:', state);
-        
-        switch(state) {
+
+        switch (state) {
             case 'search':
                 showSearchSection(false);
                 break;
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function performSearch() {
         currentSearchTerm = searchInput.value.toLowerCase().trim();
         console.log(`검색 시작: "${currentSearchTerm}"`);
-        
+
         const excludeNonUnivChecked = excludeNonUniv.checked;
         const excludeOldChecked = excludeOld.checked;
 
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         filteredData = allData.filter(item => {
-            const matchesSearch = Object.values(item).some(value => 
+            const matchesSearch = Object.values(item).some(value =>
                 String(value).toLowerCase().includes(currentSearchTerm)
             );
 
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 결과 표시
     function displayResults() {
         companyList.innerHTML = '';
-        
+
         if (filteredData.length === 0) {
             companyList.innerHTML = '<div class="no-results">검색 결과가 없습니다.</div>';
             return;
@@ -181,33 +181,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const gridContainer = document.createElement('div');
         gridContainer.className = 'company-grid';
-        
+
         filteredData.forEach(item => {
             const companyItem = document.createElement('div');
             companyItem.className = 'company-item';
-            
+
             // 검색어 하이라이트 적용
             const nameHighlighted = highlightText(item.name || '거래처명 없음', currentSearchTerm);
-            
+
             // 담당자 정보 표시 - 코드(_이전) 제거하고 이름만 표시
-            let sales1Display = extractName(item.sales1);
-            let sales2Display = extractName(item.sales2);
             let managerDisplay = extractName(item.manager);
-            
+
             companyItem.innerHTML = `
                 <h3>${nameHighlighted}</h3>
-                <table class="company-table">
-                    <tr>
-                        <th>영업1팀</th>
-                        <th>영업2팀</th>
-                        <th>거래처 담당</th>
-                    </tr>
-                    <tr>
-                        <td>${sales1Display}</td>
-                        <td>${sales2Display}</td>
-                        <td>${managerDisplay}</td>
-                    </tr>
-                </table>
+                <div class="company-info-simple">
+                    <span class="info-label">담당자:</span>
+                    <span class="info-value">${managerDisplay}</span>
+                </div>
             `;
             companyItem.addEventListener('click', () => showDetails(item));
             gridContainer.appendChild(companyItem);
@@ -219,13 +209,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 담당자 코드에서 이름만 추출하는 함수
     function extractName(text) {
         if (!text) return '-';
-        
+
         // xx_이름 형식에서 이름만 추출
         const match = text.match(/_([^_]+)$/);
         if (match && match[1]) {
             return match[1];
         }
-        
+
         return text;
     }
 
@@ -235,15 +225,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const nameHighlighted = highlightText(item.name || '정보 없음', currentSearchTerm);
         const phoneHighlighted = highlightText(item.phone || '정보 없음', currentSearchTerm);
         const addressHighlighted = highlightText(item.address || '정보 없음', currentSearchTerm);
-        
+
         // 담당자 정보는 이름만 표시
         const managerHighlighted = highlightText(extractName(item.manager), currentSearchTerm);
-        const sales1Highlighted = highlightText(extractName(item.sales1), currentSearchTerm);
-        const sales2Highlighted = highlightText(extractName(item.sales2), currentSearchTerm);
-        
+
         const regionHighlighted = highlightText(item.region || '정보 없음', currentSearchTerm);
         const universityHighlighted = highlightText(item.university || '대학 아님', currentSearchTerm);
-        
+
         companyDetails.innerHTML = `
             <div class="detail-group">
                 <h3>기본 정보</h3>
@@ -253,9 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="detail-group">
                 <h3>담당자 정보</h3>
-                <p><strong>거래처 담당:</strong> ${managerHighlighted}</p>
-                <p><strong>영업1팀 담당:</strong> ${sales1Highlighted}</p>
-                <p><strong>영업2팀 담당:</strong> ${sales2Highlighted}</p>
+                <p><strong>담당자:</strong> ${managerHighlighted}</p>
             </div>
             <div class="detail-group">
                 <h3>추가 정보</h3>
@@ -263,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><strong>대학:</strong> ${universityHighlighted}</p>
             </div>
         `;
-        
+
         showDetailSection(addToHistory);
         if (addToHistory) {
             history.pushState({ page: 'detail', item: item }, '', `/detail/${encodeURIComponent(item.name)}`);
@@ -277,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         detailSection.style.display = 'none';
         searchInput.focus();
         currentState = 'search';
-        
+
         if (addToHistory) {
             history.pushState({ page: 'search' }, '', '/');
         }
@@ -288,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsSection.style.display = 'block';
         detailSection.style.display = 'none';
         currentState = 'results';
-        
+
         if (addToHistory) {
             history.pushState({ page: 'results' }, '', '/results');
         }
@@ -299,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsSection.style.display = 'none';
         detailSection.style.display = 'block';
         currentState = 'detail';
-        
+
         if (addToHistory) {
             history.pushState({ page: 'detail' }, '', '/detail');
         }
