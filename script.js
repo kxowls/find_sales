@@ -226,17 +226,33 @@ document.addEventListener('DOMContentLoaded', () => {
         companyList.appendChild(gridContainer);
     }
 
-    // 담당자 코드에서 이름만 추출하는 함수
-    function extractName(text) {
-        if (!text) return '-';
+    // 주소 축약 함수
+    function truncateAddress(address) {
+        if (!address) return '';
 
-        // xx_이름 형식에서 이름만 추출
-        const match = text.match(/_([^_]+)$/);
-        if (match && match[1]) {
-            return match[1];
+        const parts = address.split(' ');
+        if (parts.length === 0) return address;
+
+        const isSeoul = address.startsWith('서울') || address.startsWith('서울특별시');
+
+        let truncated = '';
+        if (isSeoul) {
+            // 서울인 경우 '구'가 포함된 단어까지 추출
+            for (let i = 0; i < parts.length; i++) {
+                truncated += (truncated ? ' ' : '') + parts[i];
+                if (parts[i].endsWith('구')) break;
+                if (i >= 2) break; // 너무 길어지는 것 방지 (서울 광진구 등)
+            }
+        } else {
+            // 기타 지역은 '시'가 포함된 단어까지 추출
+            for (let i = 0; i < parts.length; i++) {
+                truncated += (truncated ? ' ' : '') + parts[i];
+                if (parts[i].endsWith('시')) break;
+                if (i >= 2) break; // 너무 길어지는 것 방지 (강원도 원주시 등)
+            }
         }
 
-        return text;
+        return truncated;
     }
 
     // 상세 정보 표시
