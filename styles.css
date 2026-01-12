@@ -334,4 +334,30 @@ header h1 {
     .company-table td {
         font-size: 0.8rem;
     }
-} 
+}
+
+.manager-tel {
+    color: #0984e3;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 5px;
+}
+
+.manager-tel:hover {
+    text-decoration: underline;
+}
+
+.company-info-simple {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: #636e72;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #2d3436;
+    min-width: 50px;
+}
+ 

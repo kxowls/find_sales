@@ -3,6 +3,17 @@ let allData = [];
 let currentSearchTerm = '';  // 현재 검색어 저장 변수 추가
 let isDataLoaded = false;
 
+// 담당자 연락처 데이터 매핑
+const managerContacts = {
+    '김성삼': '010-3233-4321',
+    '이성훈': '010-8536-3253',
+    '임현기': '010-3827-9725',
+    '이정훈': '010-3897-9167',
+    '김주성': '010-6481-0664',
+    '길진철': '010-2213-7482',
+    '이윤형': '010-7415-4321'
+};
+
 // DOM이 로드된 후 실행
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM이 로드되었습니다.');
@@ -190,13 +201,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const nameHighlighted = highlightText(item.name || '거래처명 없음', currentSearchTerm);
 
             // 담당자 정보 표시 - 코드(_이전) 제거하고 이름만 표시
-            let managerDisplay = extractName(item.manager);
+            let managerName = extractName(item.manager);
+            let managerContact = managerContacts[managerName] || '';
+            let managerDisplay = managerContact ? `${managerName} (${managerContact})` : managerName;
 
             companyItem.innerHTML = `
                 <h3>${nameHighlighted}</h3>
                 <div class="company-info-simple">
                     <span class="info-label">담당자:</span>
-                    <span class="info-value">${managerDisplay}</span>
+                    <span class="info-value">${highlightText(managerDisplay, currentSearchTerm)}</span>
                 </div>
             `;
             companyItem.addEventListener('click', () => showDetails(item));
@@ -226,8 +239,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const phoneHighlighted = highlightText(item.phone || '정보 없음', currentSearchTerm);
         const addressHighlighted = highlightText(item.address || '정보 없음', currentSearchTerm);
 
-        // 담당자 정보는 이름만 표시
-        const managerHighlighted = highlightText(extractName(item.manager), currentSearchTerm);
+        // 담당자 정보는 이름과 연락처 표시
+        const managerName = extractName(item.manager);
+        const managerContact = managerContacts[managerName] || '';
+        let managerDisplay = managerName;
+        if (managerContact) {
+            managerDisplay = `${managerName} <a href="tel:${managerContact}" class="manager-tel">(${managerContact})</a>`;
+        }
+        const managerHighlighted = highlightText(managerDisplay, currentSearchTerm);
 
         const regionHighlighted = highlightText(item.region || '정보 없음', currentSearchTerm);
         const universityHighlighted = highlightText(item.university || '대학 아님', currentSearchTerm);
@@ -241,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="detail-group">
                 <h3>담당자 정보</h3>
-                <p><strong>담당자:</strong> ${managerHighlighted}</p>
+                <p><strong>담당자:</strong> ${managerDisplay.includes('manager-tel') ? managerDisplay : managerHighlighted}</p>
             </div>
             <div class="detail-group">
                 <h3>추가 정보</h3>
