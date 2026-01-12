@@ -205,11 +205,18 @@ document.addEventListener('DOMContentLoaded', () => {
             let managerContact = managerContacts[managerName] || '';
             let managerDisplay = managerContact ? `${managerName} (${managerContact})` : managerName;
 
+            // 주소 정보 표시
+            const addressDisplay = item.address || '주소 정보 없음';
+
             companyItem.innerHTML = `
                 <h3>${nameHighlighted}</h3>
                 <div class="company-info-simple">
                     <span class="info-label">담당자:</span>
                     <span class="info-value">${highlightText(managerDisplay, currentSearchTerm)}</span>
+                </div>
+                <div class="company-info-simple">
+                    <span class="info-label">주소:</span>
+                    <span class="info-value">${highlightText(addressDisplay, currentSearchTerm)}</span>
                 </div>
             `;
             companyItem.addEventListener('click', () => showDetails(item));
