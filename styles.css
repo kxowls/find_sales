@@ -130,12 +130,16 @@ header h1 {
 }
 
 .company-item h3 {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 600;
     color: #2d3436;
     margin-bottom: 1rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid #e1e5e8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 
 .company-item p {
@@ -358,7 +362,7 @@ header h1 {
 
 .company-info-simple {
     display: flex;
-    align-items: flex-start;
+    align-items: baseline;
     gap: 8px;
     font-size: 0.95rem;
     color: #636e72;
